@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About – My Portfolio</title>
+
+  <!-- ============================================================
+    INTERNAL STYLES — ABOUT PAGE
+    Sections:
+      1. Variables & Reset (same as every page — copy/paste consistency)
+      2. Header & Mobile Nav
+      3. Page Hero (shorter than home hero)
+      4. Bio Split Section
+      5. Skills Grid
+      6. Education / Timeline
+      7. Values / Approach Cards
+      8. CTA Band & Footer
+      9. Scroll Animations & Responsive
+  ============================================================ -->
+  <style>
+
+    /* ── 1. VARIABLES & RESET ── */
+    :root {
+      --purple: #804070;
+      --blue:   #4a90e2;
+      --ink:    #111111;
+      --light-bg: #f5f5f7;
+      --white:  #ffffff;
+      --soft-border: #e0e0e5;
+      --card-shadow: 0 18px 45px rgba(0,0,0,0.10);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--light-bg);
+      color: var(--ink);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    html { scroll-behavior: smooth; }
+    img { max-width:100%; display:block; }
+
+    /* ── 2. HEADER ── */
+    header {
+      position: fixed; top:0; left:0;
+      width:100%; height:64px;
+      background: rgba(245,245,247,0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex; align-items:center; justify-content:space-between;
+      padding: 0 32px;
+      z-index: 1000;
+    }
+    .brand { font-weight:700; font-size:1rem; letter-spacing:.02em; text-decoration:none; color:var(--ink); }
+    .brand span { color:var(--purple); }
+    .desktop-nav { display:flex; gap:28px; font-size:.95rem; }
+    .desktop-nav a { text-decoration:none; color:#333; opacity:.8; transition:opacity .2s,color .2s; }
+    .desktop-nav a:hover { opacity:1; color:var(--blue); }
+    .desktop-nav a.active { color:var(--purple); opacity:1; font-weight:600; }
+    .mobile-toggle {
+      display:none; width:36px; height:36px; border-radius:50%;
+      border:1px solid rgba(0,0,0,0.15); background:#fff;
+      cursor:pointer; align-items:center; justify-content:center;
+      flex-direction:column; gap:4px;
+    }
+    .mobile-toggle span, .mobile-toggle span::before, .mobile-toggle span::after {
+      width:18px; height:2px; background:#111; border-radius:2px; display:block;
+    }
+    .mobile-toggle span { position:relative; }
+    .mobile-toggle span::before { content:""; position:absolute; top:-5px; left:0; }
+    .mobile-toggle span::after  { content:""; position:absolute; top:5px;  left:0; }
+    .mobile-nav {
+      position:fixed; top:0; right:-100%;
+      width:72%; max-width:320px; height:100vh;
+      background:rgba(5,5,9,0.95); backdrop-filter:blur(20px);
+      display:flex; flex-direction:column;
+      padding:96px 32px; transition:right .35s ease; z-index:999;
+    }
+    .mobile-nav.open { right:0; }
+    .mobile-nav a { text-decoration:none; color:#fff; font-size:1.5rem; font-weight:600; margin-bottom:1.4rem; transition:color .2s; }
+    .mobile-nav a:hover, .mobile-nav a.active { color:var(--purple); }
+
+    /* ── 3. PAGE HERO (shorter) ── */
+    /* This is a compact header used on interior pages — not the big full-screen hero */
+    .page-hero {
+      background: #050509;
+      padding: 120px 24px 80px;   /* top clears the fixed header */
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Subtle background glow */
+    .page-hero::before {
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 30% 60%, rgba(128,64,112,0.4), transparent 55%),
+        radial-gradient(circle at 70% 40%, rgba(74,144,226,0.35), transparent 55%);
+    }
+    .page-hero-content { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+    .page-hero-eyebrow {
+      display:inline-block; font-size:.85rem; font-weight:600;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--purple); background:rgba(128,64,112,0.15);
+      border:1px solid rgba(128,64,112,0.3);
+      padding:5px 14px; border-radius:999px; margin-bottom:20px;
+    }
+    .page-hero h1 {
+      font-size:clamp(2.4rem,5vw,3.8rem); font-weight:800;
+      color:#fff; line-height:1.1; margin-bottom:16px;
+    }
+    .page-hero p {
+      font-size:1.15rem; color:rgba(255,255,255,.6);
+      max-width:500px; margin:0 auto;
+    }
+
+    /* ── 4. BIO SPLIT SECTION ──
+       Photo on one side, personal bio text on the other. */
+    .bio-section {
+      background: var(--white);
+      padding: 100px 24px;
+      border-top: 1px solid var(--soft-border);
+    }
+    .bio-inner {
+      max-width: 1180px; margin:0 auto;
+      display:grid; grid-template-columns:1fr 1.3fr; gap:64px; align-items:start;
+    }
+
+    /* Profile photo container */
+    .bio-photo {
+      position: sticky;   /* sticks as you scroll past — nice effect */
+      top: 90px;
+    }
+    .bio-photo-frame {
+      /* Gradient border trick: outer div has gradient bg, inner has white bg */
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      border-radius: 28px;
+      padding: 4px;        /* this shows as the "border" */
+      display: inline-block;
+      width: 100%;
+    }
+    .bio-photo-frame img {
+      width:100%; border-radius:24px; object-fit:cover; display:block;
+      /* Placeholder until you add your photo */
+      background:linear-gradient(135deg,#1a0f2e,#0f2040);
+      min-height: 400px;
+    }
+    /* Fallback when no image — shows placeholder text */
+    .bio-photo-placeholder {
+      width:100%; min-height:420px; border-radius:24px;
+      background:linear-gradient(135deg,#1a0f2e,#0f2040);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      color:rgba(255,255,255,.35); text-align:center; padding:24px; gap:12px;
+    }
+    .bio-photo-placeholder span { font-size:2.5rem; }
+    .bio-photo-placeholder p { font-size:.85rem; line-height:1.5; }
+
+    /* Bio text column */
+    .bio-text { display:flex; flex-direction:column; gap:20px; }
+    .bio-text .section-label { color:var(--purple); font-size:.85rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+    .bio-text h2 { font-size:2.2rem; font-weight:800; line-height:1.15; }
+    .bio-text p  { font-size:1.05rem; color:#444; line-height:1.7; }
+    .bio-text strong { color:var(--ink); }
+
+    /* Fun facts row */
+    .bio-facts {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+      gap:16px; margin-top:8px;
+    }
+    .bio-fact {
+      background:var(--light-bg); border-radius:16px; padding:18px 16px;
+      border:1px solid var(--soft-border);
+    }
+    .bio-fact-icon { font-size:1.5rem; margin-bottom:6px; }
+    .bio-fact-label { font-size:.75rem; font-weight:700; color:var(--purple); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+    .bio-fact-value { font-size:.92rem; color:#333; font-weight:500; }
+
+    /* ── 5. SKILLS GRID ── */
+    .skills-section {
+      background: var(--light-bg);
+      padding: 100px 24px;
+      border-top: 1px solid var(--soft-border);
+    }
+    .skills-header {
+      max-width:1180px; margin:0 auto 52px;
+    }
+    .skills-header h2 { font-size:2.2rem; font-weight:800; margin:8px 0 12px; }
+    .skills-header p  { font-size:1.05rem; color:#555; max-width:520px; }
+
+    .skills-grid {
+      max-width:1180px; margin:0 auto;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px;
+    }
+
+    .skill-card {
+      background:var(--white); border-radius:20px;
+      border:1px solid var(--soft-border); padding:28px 22px;
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .skill-card:hover {
+      transform:translateY(-6px);
+      box-shadow:var(--card-shadow);
+    }
+    .skill-icon { font-size:2rem; margin-bottom:14px; }
+    .skill-name { font-weight:700; font-size:1rem; margin-bottom:6px; }
+    .skill-desc { font-size:.88rem; color:#666; line-height:1.5; }
+
+    /* Skill proficiency bar */
+    .skill-bar-track {
+      height:4px; background:#e8e8e8; border-radius:2px; margin-top:14px;
+    }
+    .skill-bar-fill {
+      height:100%; border-radius:2px;
+      background:linear-gradient(90deg, var(--purple), var(--blue));
+      /* Width set via inline style — e.g. style="width:85%" */
+    }
+
+    /* ── 6. EDUCATION / COURSE TIMELINE ── */
+    .edu-section {
+      background: var(--white);
+      padding: 100px 24px;
+      border-top: 1px solid var(--soft-border);
+    }
+    .edu-inner { max-width:760px; margin:0 auto; }
+    .edu-inner h2 { font-size:2.2rem; font-weight:800; margin:8px 0 40px; }
+
+    .timeline { display:flex; flex-direction:column; gap:0; }
+
+    .timeline-item {
+      display:flex; gap:24px; padding-bottom:40px; position:relative;
+    }
+    /* Vertical line connecting the dots */
+    .timeline-item:not(:last-child)::after {
+      content:"";
+      position:absolute; left:19px; top:40px; bottom:0;
+      width:2px; background:var(--soft-border);
+    }
+
+    .timeline-dot {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem;
+    }
+    /* Active / current course gets purple */
+    .timeline-dot.active {
+      background:var(--purple); color:#fff;
+      box-shadow:0 0 0 6px rgba(128,64,112,0.15);
+    }
+    /* Completed courses get gray */
+    .timeline-dot.done {
+      background:var(--light-bg); color:#666;
+      border:2px solid var(--soft-border);
+    }
+
+    .timeline-content { padding-top:6px; flex:1; }
+    .timeline-content h3 { font-size:1.05rem; font-weight:700; margin-bottom:4px; }
+    .timeline-content .meta { font-size:.85rem; color:var(--purple); font-weight:600; margin-bottom:8px; }
+    .timeline-content p  { font-size:.92rem; color:#555; line-height:1.55; }
+
+    /* ── 7. VALUES / APPROACH CARDS ── */
+    .values-section {
+      background: var(--light-bg);
+      padding: 100px 24px;
+      border-top: 1px solid var(--soft-border);
+    }
+    .values-inner { max-width:1180px; margin:0 auto; }
+    .values-inner h2 { font-size:2.2rem; font-weight:800; margin:8px 0 40px; }
+
+    .values-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px;
+    }
+    .value-card {
+      background:var(--white); border-radius:20px; padding:32px 26px;
+      border:1px solid var(--soft-border);
+      transition:transform .3s, box-shadow .3s;
+    }
+    .value-card:hover { transform:translateY(-6px); box-shadow:var(--card-shadow); }
+    .value-card .icon { font-size:2.2rem; margin-bottom:16px; }
+    .value-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:10px; }
+    .value-card p  { font-size:.92rem; color:#555; line-height:1.6; }
+
+    /* ── 8. CTA + FOOTER ── */
+    .cta-band {
+      background:var(--white); border-top:1px solid var(--soft-border); padding:80px 24px;
+    }
+    .cta-inner {
+      max-width:1180px; margin:0 auto;
+      display:flex; justify-content:space-between; align-items:center; gap:32px; flex-wrap:wrap;
+    }
+    .cta-text h2 { font-size:2rem; font-weight:800; margin-bottom:10px; }
+    .cta-text p  { color:#555; max-width:480px; }
+    .btn-primary {
+      display:inline-block; padding:15px 34px; border-radius:999px;
+      background:var(--purple); color:#fff; text-decoration:none;
+      font-weight:600; font-size:1rem;
+      transition:background .25s, transform .25s, box-shadow .25s;
+    }
+    .btn-primary:hover { background:#6c2c5d; transform:translateY(-3px); box-shadow:0 12px 30px rgba(128,64,112,.4); }
+    footer { background:#000; color:#9ca3af; text-align:center; padding:20px; font-size:.85rem; }
+
+    /* ── 9. ANIMATIONS & RESPONSIVE ── */
+    .fade-up { opacity:0; transform:translateY(40px); transition:opacity .8s ease,transform .8s ease; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+    .fade-up:nth-child(2) { transition-delay:.1s; }
+    .fade-up:nth-child(3) { transition-delay:.2s; }
+    .fade-up:nth-child(4) { transition-delay:.3s; }
+
+    @media(max-width:900px){
+      .desktop-nav { display:none; }
+      .mobile-toggle { display:flex; }
+      .bio-inner { grid-template-columns:1fr; }
+      .bio-photo { position:static; }
+      .cta-inner { flex-direction:column; text-align:center; }
+    }
+    @media(max-width:600px){
+      .page-hero { padding:100px 16px 60px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <a class="brand" href="index.html">Your<span>Portfolio</span></a>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="about.html" class="active">About</a>
+      <a href="projects.html">Projects</a>
+      <a href="multimedia.html">Multimedia</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="mobile-toggle" aria-label="Open menu" onclick="toggleMobileNav()"><span></span></button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="index.html"      onclick="toggleMobileNav()">Home</a>
+    <a href="about.html" class="active" onclick="toggleMobileNav()">About</a>
+    <a href="projects.html"   onclick="toggleMobileNav()">Projects</a>
+    <a href="multimedia.html" onclick="toggleMobileNav()">Multimedia</a>
+    <a href="contact.html"    onclick="toggleMobileNav()">Contact</a>
+  </nav>
+
+  <main style="padding-top:64px;">
+
+    <!-- ── PAGE HERO ── -->
+    <section class="page-hero">
+      <div class="page-hero-content">
+        <span class="page-hero-eyebrow">About Me</span>
+        <!-- ★ Replace with your name -->
+        <h1>Hi, I'm Your Name</h1>
+        <!-- ★ Replace with your short tagline -->
+        <p>Student at NOVA · Web creator · Multimedia storyteller</p>
+      </div>
+    </section>
+
+    <!-- ── BIO SECTION ──
+      LEFT: Your photo
+      RIGHT: Who you are, where you are from, your goals
+      ★ Replace ALL placeholder text below ★
+    ── -->
+    <section class="bio-section">
+      <div class="bio-inner">
+
+        <!-- Profile photo -->
+        <div class="bio-photo fade-up">
+          <div class="bio-photo-frame">
+            <!--
+              HOW TO ADD YOUR PHOTO:
+              1. Save a headshot to images/profile.jpg
+              2. Remove the placeholder div below
+              3. Uncomment the img tag:
+              <img src="images/profile.jpg" alt="Your Name" />
+            -->
+            <div class="bio-photo-placeholder">
+              <span>📷</span>
+              <p>Add your profile photo here<br/>images/profile.jpg</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio text -->
+        <div class="bio-text fade-up">
+
+          <span class="section-label">My Story</span>
+
+          <!-- ★ Replace with your name -->
+          <h2>Your Full Name</h2>
+
+          <!-- ★ Replace with your story — 2-3 paragraphs -->
+          <p>
+            Write your first paragraph here. Tell visitors who you are —
+            where you are from, what brought you to NOVA, and why you are
+            studying web and multimedia. Be genuine and specific.
+          </p>
+          <p>
+            Write your second paragraph here. What are you hoping to do
+            with what you are learning? Talk about your interests, goals,
+            or what excites you about web design and multimedia.
+          </p>
+          <p>
+            Third paragraph (optional): Something fun or personal —
+            hobbies, interests, what you do outside of class. Let your
+            personality come through.
+          </p>
+
+          <!-- Fun facts grid — quick stats about you -->
+          <div class="bio-facts">
+            <!-- ★ Replace each label and value with your own info -->
+            <div class="bio-fact">
+              <div class="bio-fact-icon">📍</div>
+              <div class="bio-fact-label">Location</div>
+              <div class="bio-fact-value">Northern Virginia</div>
+            </div>
+            <div class="bio-fact">
+              <div class="bio-fact-icon">🎓</div>
+              <div class="bio-fact-label">Program</div>
+              <div class="bio-fact-value">IT / Multimedia</div>
+            </div>
+            <div class="bio-fact">
+              <div class="bio-fact-icon">🌟</div>
+              <div class="bio-fact-label">Semester</div>
+              <div class="bio-fact-value">Spring 2025</div>
+            </div>
+            <div class="bio-fact">
+              <div class="bio-fact-icon">💡</div>
+              <div class="bio-fact-label">Passion</div>
+              <!-- ★ Replace with YOUR passion -->
+              <div class="bio-fact-value">Web Design</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SKILLS GRID ──
+      Showcase the tools and technologies you have learned.
+      ★ Add, remove, or replace skill cards to match YOUR skills ★
+    ── -->
+    <section class="skills-section">
+      <div class="skills-header fade-up">
+        <span class="section-label">Skills & Tools</span>
+        <h2>What I work with</h2>
+        <p>Technologies and tools I have learned and practiced in Web and Multimedia.</p>
+      </div>
+
+      <div class="skills-grid">
+
+        <!-- SKILL CARD — HTML -->
+        <div class="skill-card fade-up">
+          <div class="skill-icon">🌐</div>
+          <div class="skill-name">HTML5</div>
+          <div class="skill-desc">Semantic markup, accessibility, structure and meaning.</div>
+          <div class="skill-bar-track">
+            <!-- ★ Adjust width to reflect YOUR skill level (out of 100%) -->
+            <div class="skill-bar-fill" style="width:90%;"></div>
+          </div>
+        </div>
+
+        <!-- SKILL CARD — CSS -->
+        <div class="skill-card fade-up">
+          <div class="skill-icon">🎨</div>
+          <div class="skill-name">CSS3</div>
+          <div class="skill-desc">Layouts, animations, Flexbox, Grid, responsive design.</div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" style="width:85%;"></div>
+          </div>
+        </div>
+
+        <!-- SKILL CARD — Tailwind -->
+        <div class="skill-card fade-up">
+          <div class="skill-icon">💨</div>
+          <div class="skill-name">Tailwind CSS</div>
+          <div class="skill-desc">Utility-first styling, rapid UI development, responsive classes.</div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" style="width:75%;"></div>
+          </div>
+        </div>
+
+        <!-- SKILL CARD — JavaScript -->
+        <div class="skill-card fade-up">
+          <div class="skill-icon">⚡</div>
+          <div class="skill-name">JavaScript</div>
+          <div class="skill-desc">Interactivity, DOM manipulation, event handling.</div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" style="width:65%;"></div>
+          </div>
+        </div>
+
+        <!-- SKILL CARD — Add your own! -->
+        <div class="skill-card fade-up">
+          <!-- ★ Replace icon, name, and description with another skill you have -->
+          <div class="skill-icon">🎬</div>
+          <div class="skill-name">Video Editing</div>
+          <div class="skill-desc">Replace with your own skill — e.g. Figma, Photoshop, etc.</div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" style="width:70%;"></div>
+          </div>
+        </div>
+
+        <!-- SKILL CARD — Deployment -->
+        <div class="skill-card fade-up">
+          <div class="skill-icon">🚀</div>
+          <div class="skill-name">Netlify</div>
+          <div class="skill-desc">Deploying live websites — turning local files into public URLs.</div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" style="width:80%;"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── COURSE TIMELINE ──
+      A visual history of courses / learning milestones.
+      ★ Update each item with YOUR courses and descriptions ★
+    ── -->
+    <section class="edu-section">
+      <div class="edu-inner">
+        <span class="section-label fade-up">Education</span>
+        <h2 class="fade-up">My learning journey</h2>
+
+        <div class="timeline">
+
+          <!-- CURRENT course — use class="active" on the dot -->
+          <div class="timeline-item fade-up">
+            <div class="timeline-dot active">⭐</div>
+            <div class="timeline-content">
+              <div class="meta">Current · Spring 2025</div>
+              <!-- ★ Replace with your current course -->
+              <h3>ITE 170 — Multimedia & Web Development</h3>
+              <p>
+                Building responsive websites with HTML, CSS, and Tailwind.
+                Projects include a photography grid, product landing page, and
+                this portfolio — all deployed live on Netlify.
+              </p>
+            </div>
+          </div>
+
+          <!-- COMPLETED courses / milestones -->
+          <div class="timeline-item fade-up">
+            <div class="timeline-dot done">✓</div>
+            <div class="timeline-content">
+              <div class="meta">Fall 2024</div>
+              <!-- ★ Replace with your previous course or experience -->
+              <h3>Previous Course or Experience</h3>
+              <p>Describe what you learned or did here. Could be a previous course, job, or project that brought you to this point.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-up">
+            <div class="timeline-dot done">✓</div>
+            <div class="timeline-content">
+              <div class="meta">Before NOVA</div>
+              <!-- ★ High school, work, personal learning, etc. -->
+              <h3>What brought you to web design?</h3>
+              <p>Talk about your background — where you started, what sparked your interest in technology or design.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── VALUES / APPROACH CARDS ──
+      What guides your work as a designer/developer.
+      ★ Make these YOUR values — be authentic ★
+    ── -->
+    <section class="values-section">
+      <div class="values-inner">
+        <span class="section-label fade-up">How I Work</span>
+        <h2 class="fade-up">My approach</h2>
+
+        <div class="values-grid">
+
+          <div class="value-card fade-up">
+            <!-- ★ Replace icon and text with your own approach -->
+            <div class="icon">🎯</div>
+            <h3>Intentional Design</h3>
+            <p>Every decision has a reason. Good design isn't decoration — it solves problems and guides people toward a goal.</p>
+          </div>
+
+          <div class="value-card fade-up">
+            <div class="icon">♿</div>
+            <h3>Accessibility First</h3>
+            <p>Great websites work for everyone. I include alt text, semantic HTML, and sufficient color contrast in every project.</p>
+          </div>
+
+          <div class="value-card fade-up">
+            <div class="icon">📱</div>
+            <h3>Mobile Responsive</h3>
+            <p>I test every project on my phone. If it doesn't work on mobile, it isn't finished.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="cta-band">
+      <div class="cta-inner fade-up">
+        <div class="cta-text">
+          <h2>Ready to see my work?</h2>
+          <p>Browse my projects to see these skills in action.</p>
+        </div>
+        <a href="projects.html" class="btn-primary">View Projects →</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2025 Your Name · Web and Multimedia · NOVA Annandale</p>
+  </footer>
+
+  <script>
+    function toggleMobileNav() {
+      document.getElementById("mobileNav").classList.toggle("open");
+    }
+    document.addEventListener("click", function(e) {
+      const nav = document.getElementById("mobileNav");
+      const toggle = document.querySelector(".mobile-toggle");
+      if (!nav.contains(e.target) && !toggle.contains(e.target)) nav.classList.remove("open");
+    });
+    const observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) { entry.target.classList.add("visible"); observer.unobserve(entry.target); }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".fade-up").forEach(function(el) { observer.observe(el); });
+  </script>
+
+</body>
+</html>

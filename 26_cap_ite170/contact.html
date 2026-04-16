@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact – My Portfolio</title>
+
+  <!-- ============================================================
+    INTERNAL STYLES — CONTACT PAGE
+    Sections:
+      1. Variables & Reset
+      2. Header & Mobile Nav
+      3. Page Hero
+      4. Contact Split Layout (form + info)
+      5. Contact Form Styles
+      6. Social Links
+      7. Success Message (shown after form submit)
+      8. CTA Band & Footer
+      9. Animations & Responsive
+  ============================================================ -->
+  <style>
+
+    /* ── 1. VARIABLES & RESET ── */
+    :root {
+      --purple: #804070;
+      --blue:   #4a90e2;
+      --ink:    #111111;
+      --light-bg: #f5f5f7;
+      --white:  #ffffff;
+      --soft-border: #e0e0e5;
+      --card-shadow: 0 18px 45px rgba(0,0,0,0.10);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--light-bg);
+      color: var(--ink);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    html { scroll-behavior: smooth; }
+    img { max-width:100%; display:block; }
+
+    /* ── 2. HEADER ── */
+    header {
+      position:fixed; top:0; left:0; width:100%; height:64px;
+      background:rgba(245,245,247,0.96); backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px); border-bottom:1px solid rgba(0,0,0,0.06);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 32px; z-index:1000;
+    }
+    .brand { font-weight:700; font-size:1rem; letter-spacing:.02em; text-decoration:none; color:var(--ink); }
+    .brand span { color:var(--purple); }
+    .desktop-nav { display:flex; gap:28px; font-size:.95rem; }
+    .desktop-nav a { text-decoration:none; color:#333; opacity:.8; transition:opacity .2s,color .2s; }
+    .desktop-nav a:hover { opacity:1; color:var(--blue); }
+    .desktop-nav a.active { color:var(--purple); opacity:1; font-weight:600; }
+    .mobile-toggle {
+      display:none; width:36px; height:36px; border-radius:50%;
+      border:1px solid rgba(0,0,0,.15); background:#fff; cursor:pointer;
+      align-items:center; justify-content:center; flex-direction:column; gap:4px;
+    }
+    .mobile-toggle span,.mobile-toggle span::before,.mobile-toggle span::after {
+      width:18px; height:2px; background:#111; border-radius:2px; display:block;
+    }
+    .mobile-toggle span { position:relative; }
+    .mobile-toggle span::before { content:""; position:absolute; top:-5px; left:0; }
+    .mobile-toggle span::after  { content:""; position:absolute; top:5px;  left:0; }
+    .mobile-nav {
+      position:fixed; top:0; right:-100%; width:72%; max-width:320px; height:100vh;
+      background:rgba(5,5,9,.95); backdrop-filter:blur(20px);
+      display:flex; flex-direction:column; padding:96px 32px;
+      transition:right .35s ease; z-index:999;
+    }
+    .mobile-nav.open { right:0; }
+    .mobile-nav a { text-decoration:none; color:#fff; font-size:1.5rem; font-weight:600; margin-bottom:1.4rem; transition:color .2s; }
+    .mobile-nav a:hover, .mobile-nav a.active { color:var(--purple); }
+
+    /* ── 3. PAGE HERO ── */
+    .page-hero {
+      background:#050509; padding:120px 24px 80px;
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .page-hero::before {
+      content:""; position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 25% 65%, rgba(128,64,112,.4), transparent 55%),
+        radial-gradient(circle at 75% 35%, rgba(74,144,226,.35), transparent 55%);
+    }
+    .page-hero-content { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+    .page-hero-eyebrow {
+      display:inline-block; font-size:.85rem; font-weight:600; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--purple); background:rgba(128,64,112,.15);
+      border:1px solid rgba(128,64,112,.3); padding:5px 14px; border-radius:999px; margin-bottom:20px;
+    }
+    .page-hero h1 { font-size:clamp(2.4rem,5vw,3.8rem); font-weight:800; color:#fff; line-height:1.1; margin-bottom:16px; }
+    .page-hero p  { font-size:1.15rem; color:rgba(255,255,255,.6); max-width:500px; margin:0 auto; }
+
+    /* ── 4. CONTACT SPLIT SECTION ── */
+    .contact-section {
+      background: var(--white);
+      padding: 80px 24px 100px;
+      border-top: 1px solid var(--soft-border);
+    }
+
+    /* Two-column layout: form on right, info on left */
+    .contact-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── LEFT COLUMN: Contact info ── */
+    .contact-info { display:flex; flex-direction:column; gap:32px; }
+
+    .section-label {
+      display:block; font-size:.82rem; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase; color:var(--purple); margin-bottom:6px;
+    }
+    .contact-info h2 { font-size:2.2rem; font-weight:800; line-height:1.15; margin-bottom:14px; }
+    .contact-info p  { font-size:1.05rem; color:#444; line-height:1.7; }
+
+    /* Individual contact method row */
+    .contact-method {
+      display:flex; align-items:flex-start; gap:16px;
+      padding:18px 20px; border-radius:16px;
+      background:var(--light-bg); border:1px solid var(--soft-border);
+      transition:transform .3s,box-shadow .3s;
+    }
+    .contact-method:hover { transform:translateY(-4px); box-shadow:var(--card-shadow); }
+
+    .method-icon {
+      width:42px; height:42px; border-radius:12px;
+      background:linear-gradient(135deg,var(--purple),var(--blue));
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; flex-shrink:0;
+    }
+    .method-info .method-type { font-size:.78rem; font-weight:700; color:var(--purple); letter-spacing:.06em; text-transform:uppercase; margin-bottom:2px; }
+    .method-info .method-value { font-size:.95rem; font-weight:500; color:#111; }
+    .method-info .method-value a { color:var(--blue); text-decoration:none; }
+    .method-info .method-value a:hover { text-decoration:underline; }
+
+    /* ── 5. CONTACT FORM ── */
+    .contact-form-wrap {
+      background: var(--white);
+      border: 1px solid var(--soft-border);
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    .form-title {
+      font-size:1.4rem; font-weight:700; margin-bottom:6px;
+    }
+    .form-subtitle {
+      font-size:.92rem; color:#666; margin-bottom:28px;
+    }
+
+    .form-group {
+      display:flex; flex-direction:column; gap:6px; margin-bottom:20px;
+    }
+
+    /* Label above each input */
+    .form-group label {
+      font-size:.88rem; font-weight:600; color:#333;
+    }
+
+    /* Shared styles for text inputs, selects, and textareas */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width:100%;
+      padding:13px 16px;
+      border-radius:12px;
+      border:1.5px solid var(--soft-border);
+      font-size:.95rem;
+      font-family:inherit;
+      color:var(--ink);
+      background:var(--white);
+      /* Remove default browser outline — we add our own below */
+      outline:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+
+    /* Focused state: border turns purple with a soft glow ring */
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color:var(--purple);
+      box-shadow:0 0 0 3px rgba(128,64,112,0.12);
+    }
+
+    .form-group textarea { resize:vertical; min-height:140px; }
+
+    /* Side-by-side fields row */
+    .form-row {
+      display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width:100%; padding:15px;
+      border-radius:12px; border:none;
+      background:var(--purple); color:#fff;
+      font-size:1rem; font-weight:600; font-family:inherit;
+      cursor:pointer;
+      transition:background .25s, transform .2s, box-shadow .2s;
+      margin-top:6px;
+    }
+    .btn-submit:hover {
+      background:#6c2c5d;
+      transform:translateY(-2px);
+      box-shadow:0 8px 24px rgba(128,64,112,0.35);
+    }
+    .btn-submit:active { transform:translateY(0); }
+
+    /* ── 6. SOCIAL LINKS ── */
+    .social-section {
+      background: var(--light-bg);
+      border-top:1px solid var(--soft-border);
+      padding:60px 24px;
+      text-align:center;
+    }
+    .social-inner { max-width:700px; margin:0 auto; }
+    .social-inner h2 { font-size:1.8rem; font-weight:800; margin:6px 0 12px; }
+    .social-inner p  { font-size:1rem; color:#555; margin-bottom:32px; }
+
+    .social-links {
+      display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+    }
+
+    .social-link {
+      display:flex; align-items:center; gap:10px;
+      padding:12px 22px; border-radius:999px;
+      background:var(--white); border:1px solid var(--soft-border);
+      text-decoration:none; color:var(--ink); font-weight:600; font-size:.95rem;
+      transition:transform .25s,box-shadow .25s,border-color .25s;
+    }
+    .social-link:hover {
+      transform:translateY(-4px);
+      box-shadow:var(--card-shadow);
+      border-color:var(--purple);
+    }
+    .social-link-icon { font-size:1.2rem; }
+
+    /* ── 7. SUCCESS MESSAGE ──
+       Hidden by default. JavaScript shows it after form is submitted.
+    ── */
+    .success-message {
+      display:none;              /* hidden until JS shows it */
+      background:var(--light-bg);
+      border:1.5px solid #22c55e;
+      border-radius:16px; padding:24px;
+      text-align:center; margin-top:20px;
+    }
+    .success-message.show { display:block; }
+    .success-message h3 { font-size:1.2rem; color:#166534; margin-bottom:6px; }
+    .success-message p  { font-size:.92rem; color:#166534; }
+
+    /* ── 8. CTA + FOOTER ── */
+    .cta-band {
+      background:var(--white); border-top:1px solid var(--soft-border); padding:80px 24px;
+    }
+    .cta-inner {
+      max-width:1180px; margin:0 auto;
+      display:flex; justify-content:space-between; align-items:center; gap:32px; flex-wrap:wrap;
+    }
+    .cta-text h2 { font-size:2rem; font-weight:800; margin-bottom:10px; }
+    .cta-text p  { color:#555; max-width:480px; }
+    .btn-primary {
+      display:inline-block; padding:14px 30px; border-radius:999px;
+      background:var(--purple); color:#fff; text-decoration:none;
+      font-weight:600; font-size:1rem; transition:background .25s,transform .25s;
+    }
+    .btn-primary:hover { background:#6c2c5d; transform:translateY(-3px); }
+    footer { background:#000; color:#9ca3af; text-align:center; padding:20px; font-size:.85rem; }
+
+    /* ── 9. ANIMATIONS & RESPONSIVE ── */
+    .fade-up { opacity:0; transform:translateY(40px); transition:opacity .8s ease,transform .8s ease; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+
+    @media(max-width:900px){
+      .desktop-nav { display:none; }
+      .mobile-toggle { display:flex; }
+      .contact-inner { grid-template-columns:1fr; }
+      .contact-form-wrap { padding:28px 22px; }
+      .cta-inner { flex-direction:column; text-align:center; }
+    }
+    @media(max-width:600px){
+      .form-row { grid-template-columns:1fr; }
+      .page-hero { padding:100px 16px 60px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <a class="brand" href="index.html">Your<span>Portfolio</span></a>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="projects.html">Projects</a>
+      <a href="multimedia.html">Multimedia</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <button class="mobile-toggle" aria-label="Open menu" onclick="toggleMobileNav()"><span></span></button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="index.html"      onclick="toggleMobileNav()">Home</a>
+    <a href="about.html"      onclick="toggleMobileNav()">About</a>
+    <a href="projects.html"   onclick="toggleMobileNav()">Projects</a>
+    <a href="multimedia.html" onclick="toggleMobileNav()">Multimedia</a>
+    <a href="contact.html" class="active" onclick="toggleMobileNav()">Contact</a>
+  </nav>
+
+  <main style="padding-top:64px;">
+
+    <!-- ── PAGE HERO ── -->
+    <section class="page-hero">
+      <div class="page-hero-content">
+        <span class="page-hero-eyebrow">Get in Touch</span>
+        <h1>Contact</h1>
+        <!-- ★ Replace with your own invitation -->
+        <p>Have feedback, a question, or just want to connect? I'd love to hear from you.</p>
+      </div>
+    </section>
+
+    <!-- ── CONTACT SPLIT ── -->
+    <section class="contact-section">
+      <div class="contact-inner">
+
+        <!-- LEFT: Contact info + methods -->
+        <div class="contact-info fade-up">
+          <div>
+            <span class="section-label">Contact</span>
+            <!-- ★ Replace heading and intro -->
+            <h2>Let's connect</h2>
+            <p>
+              Whether you're a fellow student, potential collaborator, or
+              employer reviewing my work — feel free to reach out.
+              I typically respond within 24 hours.
+            </p>
+          </div>
+
+          <!-- Contact method cards -->
+          <!-- ★ Replace with YOUR actual contact info -->
+
+          <div class="contact-method">
+            <div class="method-icon">📧</div>
+            <div class="method-info">
+              <div class="method-type">Email</div>
+              <div class="method-value">
+                <!-- ★ Replace with your NOVA email or personal email -->
+                <a href="mailto:yourname@email.com">yourname@email.com</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <div class="method-icon">🎓</div>
+            <div class="method-info">
+              <div class="method-type">Institution</div>
+              <div class="method-value">NOVA Annandale · ITE 170</div>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <div class="method-icon">💼</div>
+            <div class="method-info">
+              <div class="method-type">LinkedIn</div>
+              <div class="method-value">
+                <!-- ★ Replace with your LinkedIn URL (optional) -->
+                <a href="#" target="_blank" rel="noopener">Your LinkedIn Profile →</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <div class="method-icon">🐙</div>
+            <div class="method-info">
+              <div class="method-type">GitHub</div>
+              <div class="method-value">
+                <!-- ★ Replace with your GitHub URL (optional) -->
+                <a href="#" target="_blank" rel="noopener">Your GitHub Profile →</a>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end .contact-info -->
+
+        <!-- RIGHT: Contact form -->
+        <div class="contact-form-wrap fade-up">
+          <div class="form-title">Send a message</div>
+          <div class="form-subtitle">Fill out the form and I'll get back to you shortly.</div>
+
+          <!--
+            HOW THIS FORM WORKS:
+            This form uses JavaScript to validate and "submit" (it shows
+            a success message without actually sending an email, since that
+            requires a backend server or a service like Formspree).
+
+            TO MAKE IT ACTUALLY SEND EMAILS:
+            1. Go to formspree.io and create a free account
+            2. Create a new form and get your form ID
+            3. Change the form action to: action="https://formspree.io/f/YOUR_ID"
+            4. Add method="POST" to the form tag
+          -->
+          <form id="contactForm" onsubmit="handleSubmit(event)" novalidate>
+
+            <!-- Name + Email side by side -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input type="text" id="firstName" name="firstName"
+                       placeholder="Sarah" required autocomplete="given-name"/>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name *</label>
+                <input type="text" id="lastName" name="lastName"
+                       placeholder="Lin" required autocomplete="family-name"/>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email"
+                     placeholder="you@example.com" required autocomplete="email"/>
+            </div>
+
+            <!-- Subject dropdown -->
+            <div class="form-group">
+              <label for="subject">What's this about?</label>
+              <select id="subject" name="subject">
+                <option value="">— Select a topic —</option>
+                <!-- ★ Update options to match your situation -->
+                <option value="feedback">Project feedback</option>
+                <option value="collaborate">Collaboration opportunity</option>
+                <option value="employer">Employer / hiring inquiry</option>
+                <option value="class">ITE 170 classmate</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <!-- Message textarea -->
+            <div class="form-group">
+              <label for="message">Message *</label>
+              <textarea id="message" name="message"
+                        placeholder="Tell me what's on your mind..." required></textarea>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn-submit">
+              Send Message →
+            </button>
+
+          </form>
+
+          <!-- Success message — shown after submit -->
+          <div class="success-message" id="successMsg">
+            <h3>✅ Message sent!</h3>
+            <p>Thank you for reaching out. I'll get back to you soon.</p>
+          </div>
+
+        </div><!-- end .contact-form-wrap -->
+
+      </div>
+    </section>
+
+    <!-- ── SOCIAL LINKS ── -->
+    <section class="social-section">
+      <div class="social-inner fade-up">
+        <span class="section-label">Find Me Online</span>
+        <h2>Connect on social</h2>
+        <p>Follow my work, see what I'm building, and stay in touch.</p>
+
+        <div class="social-links">
+          <!-- ★ Replace # with your actual profile URLs -->
+
+          <a href="#" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <span class="social-link-icon">💼</span>
+            LinkedIn
+          </a>
+
+          <a href="#" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+            <span class="social-link-icon">🐙</span>
+            GitHub
+          </a>
+
+          <a href="#" class="social-link" target="_blank" rel="noopener" aria-label="Behance or portfolio">
+            <span class="social-link-icon">🎨</span>
+            Behance
+          </a>
+
+          <!-- ★ Add or remove social links as needed:
+            Instagram, YouTube, Twitter/X, Dribbble, etc.
+          -->
+          <a href="#" class="social-link" target="_blank" rel="noopener" aria-label="Other portfolio">
+            <span class="social-link-icon">🌐</span>
+            My Portfolio
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="cta-band">
+      <div class="cta-inner fade-up">
+        <div class="cta-text">
+          <h2>Thanks for visiting.</h2>
+          <p>Explore more of my work — projects, multimedia, and the skills behind them.</p>
+        </div>
+        <a href="projects.html" class="btn-primary">View My Projects →</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2025 Your Name · Web and Multimedia · NOVA Annandale</p>
+  </footer>
+
+  <script>
+    // ── MOBILE NAV ──
+    function toggleMobileNav() {
+      document.getElementById("mobileNav").classList.toggle("open");
+    }
+    document.addEventListener("click", function(e) {
+      const nav = document.getElementById("mobileNav");
+      const toggle = document.querySelector(".mobile-toggle");
+      if (!nav.contains(e.target) && !toggle.contains(e.target)) nav.classList.remove("open");
+    });
+
+    // ── FORM HANDLER ──
+    // Validates required fields, then shows a success message.
+    // In a real project, you would replace this with a Formspree or similar service.
+    function handleSubmit(e) {
+      e.preventDefault(); // stop the form from navigating away
+
+      const form = document.getElementById("contactForm");
+
+      // Gather field values and trim whitespace
+      const firstName = document.getElementById("firstName").value.trim();
+      const email     = document.getElementById("email").value.trim();
+      const message   = document.getElementById("message").value.trim();
+
+      // ── VALIDATION ──
+      // Check that required fields are filled in
+      if (!firstName || !email || !message) {
+        alert("Please fill in all required fields (marked with *).");
+        return; // stop here — don't show success
+      }
+
+      // Simple email format check using a regular expression (regex)
+      // This checks for the pattern: something@something.something
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      // ── SUCCESS ──
+      // Hide the form and show the success message
+      form.style.display = "none";
+      document.getElementById("successMsg").classList.add("show");
+
+      // Optional: reset the form so if they dismiss the message
+      // and open it again, it's blank
+      form.reset();
+    }
+
+    // ── SCROLL ANIMATIONS ──
+    const observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) { entry.target.classList.add("visible"); observer.unobserve(entry.target); }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".fade-up").forEach(function(el) { observer.observe(el); });
+  </script>
+
+</body>
+</html>
